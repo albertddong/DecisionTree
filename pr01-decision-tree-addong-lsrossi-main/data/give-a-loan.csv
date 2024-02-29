@@ -1,0 +1,11 @@
+Credit score,Age,Member of this bank,Marital status,Give a loan?
+Medium,36-50,Yes,Divorced,No
+Medium,18-35,Yes,Married,Yes
+High,0-18,Yes,Single,No
+High,36-50,Yes,Single,Yes
+High,0-18,Yes,Single,No
+High,18-35,No,Single,Yes
+High,50+,No,Divorced,Yes
+Low,36-50,No,Single,No
+Medium,18-35,No,Married,Yes
+Medium,50+,No,Married,No
