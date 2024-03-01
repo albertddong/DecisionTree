@@ -50,6 +50,7 @@ public class DecisionTreeTest {
      * Testing the getAttributeList method in the Dataset class
      */
     @Test
+    // Only one assertion in this test because the file is only configured to create one Dataset object
     public void testGetAttributeList() {
         assertEquals(this.attributeList, this.training.getAttributeList());
     }
@@ -79,6 +80,23 @@ public class DecisionTreeTest {
     }
 
     /**
+     * Testing the getAttributeToSplitOn method, which gets the attribute to split on
+     */
+    @Test
+    public void testGetAttributeToSplitOn() {
+        assertEquals("Age", training.getAttributeToSplitOn());
+
+        String createLeafTrainingPath = "data/create-leaf-test.csv";
+        List<Row> createLeafDataObjects = DecisionTreeCSVParser.parse(createLeafTrainingPath);
+        List<String> createLeafAttributeList = new ArrayList<>(createLeafDataObjects.get(0).getAttributes());
+        Dataset training2 =
+                new Dataset(createLeafAttributeList, createLeafDataObjects, AttributeSelection.DESCENDING_ALPHABETICAL);
+
+
+        assertEquals("Worn yesterday?", training2.getAttributeToSplitOn());
+    }
+
+    /**
      * Testing the defaultOutcome method, which computes the default outcome of a Dataset
      */
     @Test
@@ -86,6 +104,23 @@ public class DecisionTreeTest {
         // Because these tests pass, we know that our allAttributeValues and uniqueOutcomesList methods are working
         assertEquals("High", this.training.defaultOutcome("Credit score"));
         assertEquals("Single", this.training.defaultOutcome("Marital status"));
+        // All other attributes have random default outcomes (a tie between two attribute values), so we cannot run
+        // tests on those attributes
+    }
+
+    /**
+     * Testing the runtime exception in the defaultOutcome method, thrown when the method is called on a Dataset with
+     * an empty list of rows
+     */
+    @Test(expected = RuntimeException.class)
+    public void testExceptionDefaultOutcome(){
+        String createLeafTrainingPath = "data/create-leaf-test.csv";
+        List<Row> createLeafDataObjects = new ArrayList<>();
+        List<String> createLeafAttributeList = new ArrayList<>(createLeafDataObjects.get(0).getAttributes());
+        Dataset training2 =
+                new Dataset(createLeafAttributeList, createLeafDataObjects, AttributeSelection.DESCENDING_ALPHABETICAL);
+
+        training2.defaultOutcome("Weather");
     }
 
     /**
@@ -96,10 +131,11 @@ public class DecisionTreeTest {
         String createLeafTrainingPath = "data/create-leaf-test.csv";
         List<Row> createLeafDataObjects = DecisionTreeCSVParser.parse(createLeafTrainingPath);
         List<String> createLeafAttributeList = new ArrayList<>(createLeafDataObjects.get(0).getAttributes());
-        Dataset training2 = new Dataset(createLeafAttributeList, createLeafDataObjects, AttributeSelection.DESCENDING_ALPHABETICAL);
-
+        Dataset training2 =
+                new Dataset(createLeafAttributeList, createLeafDataObjects, AttributeSelection.DESCENDING_ALPHABETICAL);
 
         assertFalse(training.shouldCreateLeaf("Give a loan?"));
+        assertFalse(training.shouldCreateLeaf("Age"));
         assertTrue(training2.shouldCreateLeaf("Weather"));
         assertTrue(training2.shouldCreateLeaf("Worn yesterday?"));
         assertFalse(training2.shouldCreateLeaf("Plans"));
@@ -108,7 +144,7 @@ public class DecisionTreeTest {
     }
 
     /**
-     * Testing the removeAttribute method which returns a copy of the attribtueList without the attribute to remove
+     * Testing the removeAttribute method which returns a copy of the attributeList without the attribute to remove
      */
     @Test
     public void testRemoveAttribute() {

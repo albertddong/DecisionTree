@@ -11,30 +11,15 @@ import java.util.List;
 /**
  * A class that implements the ITreeGenerator interface used to generate a decision tree
  */
-// TODO: Uncomment this once you've implemented the methods in the ITreeGenerator interface!
-public class TreeGenerator /* implements ITreeGenerator<Dataset> */ {
-    // TODO: document this field
+public class TreeGenerator implements ITreeGenerator<Dataset> {
     private ITreeNode root;
-    
-    // TODO: Implement methods declared in ITreeGenerator interface!
 
     /**
      * Creating a decision tree based on a dataset and a target attribute, calling on a recursive helper
-     *
      * @param trainingData - the dataset used to create the tree
      * @param targetAttribute - the attribute for the tree to predict on
      */
     public void generateTree(Dataset trainingData, String targetAttribute) {
-        // Changed <D trainingData> to <Dataset trainingData>. I think that's allowed
-
-        // Remove the targetAttribute from the Dataset's attributeList - will require making a new ArrayList and setting
-        // the Dataset's attributeList equal to this new list
-        // EdStem talks about a .filter method that will be useful for this. We may want to implement .filter in our
-        // splitDataset method
-        // Construct the root based on the selectionType of the Dataset
-
-        // List<Integer> origList = <some elided list...>;
-        // List<Integer> filteredList = origList.stream().filter(<some predicate>).toList();
         if(trainingData.getDataObjects().isEmpty()) {
             throw new RuntimeException("Dataset is empty!");
         }
@@ -46,7 +31,7 @@ public class TreeGenerator /* implements ITreeGenerator<Dataset> */ {
         List<String> removeTarget = trainingData.removeAttribute(targetAttribute);
         Dataset withoutTarget =
                 new Dataset(removeTarget, trainingData.getDataObjects(), trainingData.getSelectionType());
-        generateLeafOrNode(withoutTarget, targetAttribute);
+        this.root = this.generateLeafOrNode(withoutTarget, targetAttribute);
     }
 
     /**
@@ -58,7 +43,7 @@ public class TreeGenerator /* implements ITreeGenerator<Dataset> */ {
      */
     public ITreeNode generateLeafOrNode(Dataset trainingData, String targetAttribute) {
         if(trainingData.shouldCreateLeaf(targetAttribute)) {
-            String outcome = trainingData.getDataObjects().getFirst().getAttributeValue(targetAttribute);
+            String outcome = trainingData.getDataObjects().get(0).getAttributeValue(targetAttribute);
             return new DecisionLeaf(outcome);
         }
         // Select an attribute to split on
@@ -66,17 +51,27 @@ public class TreeGenerator /* implements ITreeGenerator<Dataset> */ {
         // Call split dataset in a for loop for each ValueEdge
             // Add to the list of ValueEdge
             // Recursive call
+        String defVal = trainingData.defaultOutcome(targetAttribute);
         String attribute = trainingData.getAttributeToSplitOn();
         List<ValueEdge> valueEdges = new ArrayList<>();
-        List<Dataset> subsets = trainingData.splitDataset(attribute);
-        String defVal = trainingData.defaultOutcome(targetAttribute);
         AttributeNode newNode = new AttributeNode(defVal, attribute, valueEdges);
+        List<Dataset> subsets = trainingData.splitDataset(attribute);
         for(Dataset d : subsets) {
-            String edge = d.uniqueAttributeValues(attribute).getFirst();
-            ValueEdge newEdge = new ValueEdge(generateLeafOrNode(d, targetAttribute), edge);
+            String edge = d.uniqueAttributeValues(attribute).get(0);
+            ValueEdge newEdge = new ValueEdge(this.generateLeafOrNode(d, targetAttribute), edge);
             valueEdges.add(newEdge);
         }
         // Return new node, which now has the list of ValueEdges
         return newNode;
+    }
+
+    /**
+     * Getting the decision that the tree would produce for a given testing Row
+     *
+     * @param datum - the row to get the decision for
+     * @return a string representing the outcome for that row
+     */
+    public String getDecision(Row datum) {
+        return this.root.getDecision(datum);
     }
 }

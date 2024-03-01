@@ -12,8 +12,7 @@ import src.Row;
 /**
  * A class representing a training dataset for the decision tree
  */
-// TODO: Uncomment this once you've implemented the methods in the IDataset interface!
-public class Dataset /* implements IDataset */ {
+public class Dataset implements IDataset {
 
     private List<String> attributeList;
     private List<Row> dataObjects;
@@ -22,7 +21,7 @@ public class Dataset /* implements IDataset */ {
 
 
     /**
-     * Constructor for a Dataset object
+     * Constructor for the Dataset class that assigns values for attributeList, dataObjects, and attributeSelection
      * @param attributeList - a list of attributes
      * @param dataObjects -  a list of rows
      * @param attributeSelection - an enum for which way to select attributes
@@ -36,7 +35,7 @@ public class Dataset /* implements IDataset */ {
 
     /**
      * Returns the new attribute/node that should be split on next depending on the selection type
-     * @return - the attribute to split on
+     * @return the attribute to split on
      */
     public String getAttributeToSplitOn() {
         switch (this.selectionType) {
@@ -146,10 +145,16 @@ public class Dataset /* implements IDataset */ {
             }
         }
 
-        if (!maxOutcomes.isEmpty()) {
+        if (maxOutcomes.size() == 1) {
             return maxOutcomes.get(0); // Returning the first elt of a list of multiple equal outcomes is "random"
             // because it is arbitrary which row is higher in the Dataset (the Dataset rows have not been sorted)
-        } else {
+        } else if(maxOutcomes.size() > 1) {
+            Random random = new Random();
+            int upperBound = maxOutcomes.size();
+            int randomNum = random.nextInt(upperBound);
+            return maxOutcomes.get(randomNum);
+        }
+        else {
             throw new RuntimeException("No Outcomes found.");// Throw error saying no outcomes found
         }
     }
@@ -167,6 +172,7 @@ public class Dataset /* implements IDataset */ {
 
     /**
      * Creates a copy of the attributeList with the "toRemove" attribute not included within the list
+     *
      * @param toRemove - the String of the attribute to remove
      * @return a new list with the String of the attribute removed
      */

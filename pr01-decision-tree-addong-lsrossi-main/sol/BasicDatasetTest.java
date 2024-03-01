@@ -32,7 +32,7 @@ public class BasicDatasetTest {
         // builds a TreeGenerator object and generates a tree for "foodType"
         this.testGenerator = new TreeGenerator();
 //        TODO: Uncomment this once you've implemented generateTree
-//        this.testGenerator.generateTree(training, this.targetAttribute);
+        this.testGenerator.generateTree(training, this.targetAttribute);
     }
 
     /**
@@ -42,13 +42,34 @@ public class BasicDatasetTest {
     public void testClassification() {
         // makes a new (partial) Row representing the tangerine from the example
         // TODO: make your own rows based on your dataset
-        Row tangerine = new Row("test row (tangerine)");
-        tangerine.setAttributeValue("color", "orange");
-        tangerine.setAttributeValue("highProtein", "false");
-        tangerine.setAttributeValue("calories", "high");
+        Row dan = new Row("test row (dan)");
+        dan.setAttributeValue("Age", "0-18");
+        dan.setAttributeValue("Credit score", "High");
+        dan.setAttributeValue("Member of this bank", "Yes");
+        dan.setAttributeValue("Marital status", "Single");
         // TODO: make your own assertions based on the expected classifications
         // TODO: Uncomment this once you've implemented getDecision
-//        Assert.assertEquals("fruit", this.testGenerator.getDecision(tangerine));
+        Assert.assertEquals("No", this.testGenerator.getDecision(dan));
 
+        Row jan = new Row("test row (jan)");
+        jan.setAttributeValue("Age", "50+");
+        jan.setAttributeValue("Credit score", "High");
+        jan.setAttributeValue("Member of this bank", "No");
+        jan.setAttributeValue("Marital status", "Married");
+        Assert.assertEquals("Yes", this.testGenerator.getDecision(jan));
+
+        Row ann = new Row("test row (ann)");
+        ann.setAttributeValue("Age", "36-50");
+        ann.setAttributeValue("Credit score", "Medium");
+        ann.setAttributeValue("Member of this bank", "Yes");
+        ann.setAttributeValue("Marital status", "Divorced");
+        Assert.assertEquals("No", this.testGenerator.getDecision(ann));
+
+        Row stan = new Row("test row (stan)");
+        stan.setAttributeValue("Age", "18-35");
+        stan.setAttributeValue("Credit score", "High");
+        stan.setAttributeValue("Member of this bank", "No");
+        stan.setAttributeValue("Marital status", "Divorced");
+        Assert.assertEquals("Yes", this.testGenerator.getDecision(stan));
     }
 }

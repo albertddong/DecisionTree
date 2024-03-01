@@ -21,7 +21,7 @@ public class DecisionLeaf implements ITreeNode {
      * Getting the decision in a decision tree for this leaf
      * The output does not depend upon the input row
      *
-     * @param forDatum the datum to look up a decision for
+     * @param forDatum - the datum to look up a decision for
      * @return the outcomeValue string in this leaf
      */
     public String getDecision(Row forDatum) {

@@ -190,24 +190,24 @@ public class DecisionTreeTester<G extends ITreeGenerator<D>, D extends IDataset>
      * @param args
      */
 //    TODO: Uncomment this when you are ready to test your implementation!
-//    public static void main(String[] args) {
-//        DecisionTreeTester<TreeGenerator, Dataset> tester;
-//        try {
-//            tester = new DecisionTreeTester<>(TreeGenerator.class, Dataset.class);
-//            Dataset trainingData = makeDataset(SONG_TRAINING, Dataset.class);
-//            double accuracy =
-//                    tester.getDecisionTreeAccuracy(trainingData, trainingData, IS_POPULAR);
-//            System.out.println("Accuracy on training data: " + accuracy);
-//
-//            int numIters = 100;
-//            Dataset testingData = makeDataset(SONG_TESTING, Dataset.class);
-//            accuracy = tester.getAverageDecisionTreeAccuracy(trainingData, testingData, IS_POPULAR, numIters);
-//            System.out.println("Accuracy on testing data: " + accuracy);
-//
-//        } catch (InstantiationException | InvocationTargetException
-//                 | NoSuchMethodException | IllegalAccessException e) {
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
+    public static void main(String[] args) {
+        DecisionTreeTester<TreeGenerator, Dataset> tester;
+        try {
+            tester = new DecisionTreeTester<>(TreeGenerator.class, Dataset.class);
+            Dataset trainingData = makeDataset(MUSHROOMS_TRAINING, Dataset.class);
+            double accuracy =
+                    tester.getDecisionTreeAccuracy(trainingData, trainingData, IS_POISONOUS);
+            System.out.println("Accuracy on training data: " + accuracy);
+
+            int numIters = 100;
+            Dataset testingData = makeDataset(MUSHROOMS_TESTING, Dataset.class);
+            accuracy = tester.getAverageDecisionTreeAccuracy(trainingData, testingData, IS_POISONOUS, numIters);
+            System.out.println("Accuracy on testing data: " + accuracy);
+
+        } catch (InstantiationException | InvocationTargetException
+                 | NoSuchMethodException | IllegalAccessException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }
