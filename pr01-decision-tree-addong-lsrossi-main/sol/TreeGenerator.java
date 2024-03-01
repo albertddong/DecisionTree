@@ -1,9 +1,11 @@
 package sol;
 
+import org.w3c.dom.Attr;
 import src.ITreeGenerator;
 import src.ITreeNode;
 import src.Row;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,9 +35,18 @@ public class TreeGenerator /* implements ITreeGenerator<Dataset> */ {
 
         // List<Integer> origList = <some elided list...>;
         // List<Integer> filteredList = origList.stream().filter(<some predicate>).toList();
+        if(trainingData.getDataObjects().isEmpty()) {
+            throw new RuntimeException("Dataset is empty!");
+        }
+
+        if(!trainingData.getAttributeList().contains(targetAttribute)) {
+            throw new RuntimeException("Target attribute not found in dataset");
+        }
 
         List<String> removeTarget = trainingData.removeAttribute(targetAttribute);
-        String def = trainingData.defaultOutcome(targetAttribute);
+        Dataset withoutTarget =
+                new Dataset(removeTarget, trainingData.getDataObjects(), trainingData.getSelectionType());
+        generateLeafOrNode(withoutTarget, targetAttribute);
     }
 
     /**
@@ -46,13 +57,26 @@ public class TreeGenerator /* implements ITreeGenerator<Dataset> */ {
      * @return an AttributeNode or DecisionLeaf
      */
     public ITreeNode generateLeafOrNode(Dataset trainingData, String targetAttribute) {
-        String splitAttribute = trainingData.getAttributeToSplitOn(); //includes the outcome attribute (as of now) -
-        // may not pass in the same trainingData as we pass into the generateTree method
         if(trainingData.shouldCreateLeaf(targetAttribute)) {
-            String outcome = trainingData.getDataObjects().get(0).getAttributeValue(targetAttribute);
-            DecisionLeaf outcomeLeaf = new DecisionLeaf(outcome);
-            return outcomeLeaf;
+            String outcome = trainingData.getDataObjects().getFirst().getAttributeValue(targetAttribute);
+            return new DecisionLeaf(outcome);
         }
-        else
+        // Select an attribute to split on
+        // Get unique attribute values for that attribute to split on
+        // Call split dataset in a for loop for each ValueEdge
+            // Add to the list of ValueEdge
+            // Recursive call
+        String attribute = trainingData.getAttributeToSplitOn();
+        List<ValueEdge> valueEdges = new ArrayList<>();
+        List<Dataset> subsets = trainingData.splitDataset(attribute);
+        String defVal = trainingData.defaultOutcome(targetAttribute);
+        AttributeNode newNode = new AttributeNode(defVal, attribute, valueEdges);
+        for(Dataset d : subsets) {
+            String edge = d.uniqueAttributeValues(attribute).getFirst();
+            ValueEdge newEdge = new ValueEdge(generateLeafOrNode(d, targetAttribute), edge);
+            valueEdges.add(newEdge);
+        }
+        // Return new node, which now has the list of ValueEdges
+        return newNode;
     }
 }
